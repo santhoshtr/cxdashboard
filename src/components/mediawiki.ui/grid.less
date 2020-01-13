@@ -8,22 +8,13 @@
 @gutter: 8px;
 @container-width: 100%;
 
-@xs: ~"only screen and (min-width: 300px)";
-@sm: ~"only screen and (min-width: 576px)";
-@md: ~"only screen and (min-width: 768px)";
-@lg: ~"only screen and (min-width: 1024px)";
-@xl: ~"only screen and (min-width: 1200px)";
-
-// Loops for spaces and padding
-.for(@list, @code) {
-  & {
-    .loop(@i:1) when (@i =< length(@list)) {
-      @value: extract(@list, @i);
-      @code();
-      .loop(@i + 1);
-    }
-    .loop();
-  }
+// Break points
+@breakpoints: {
+  xs: ~"only screen and (min-width: 300px)"; // extra small and global
+  sm: ~"only screen and (min-width: 576px)"; // mobile
+  md: ~"only screen and (min-width: 768px)"; // tablet
+  lg: ~"only screen and (min-width: 1024px)"; // desktop
+  xl: ~"only screen and (min-width: 1200px)"; // large screen
 }
 
 // Loop for responsive breakpoints
@@ -54,6 +45,58 @@
   .generateCols(@counter - 1);
 }
 
+.generateSpacingWithBreakpoint(@counter, @media) when (@counter >= 0) {
+  @width: @counter * 4;
+  @sides: {
+    l: left;
+    r: right;
+    t: top;
+    b: bottom;
+  }
+
+  each(@sides, {
+    .p@{key}-@{media}-@{counter} {
+      padding-@{value}: ~"@{width}px";
+    }
+    .m@{key}-@{media}-@{counter} {
+      margin-@{value}: ~"@{width}px";
+    }
+  });
+  .pa-@{media}-@{counter} {
+    padding: ~"@{width}px";
+  }
+  .ma-@{media}-@{counter} {
+    margin: ~"@{width}px";
+  }
+  .generateSpacing(@counter - 1);
+}
+
+.generateSpacing(@counter) when (@counter >= 0) {
+  @width: @counter * 4;
+  @sides: {
+    l: left;
+    r: right;
+    t: top;
+    b: bottom;
+  }
+
+  each(@sides, {
+    .p@{key}-@{counter} {
+      padding-@{value}: ~"@{width}px";
+    }
+    .m@{key}-@{counter} {
+      margin-@{value}: ~"@{width}px";
+    }
+  });
+  .pa-@{counter} {
+    padding: ~"@{width}px";
+  }
+  .ma-@{counter} {
+    margin: ~"@{width}px";
+  }
+  .generateSpacing(@counter - 1);
+}
+
 .container {
   width: @container-width;
   display: block;
@@ -80,96 +123,38 @@
     }
 
     .generateCols(@cols);
+    .generateSpacing(@cols);
 
-    .col-sm-hidden,
-    .col-md-hidden,
-    .col-lg-hidden,
-    .col-xl-hidden {
-      display: flex;
-    }
+    each(@breakpoints, {
+          .col-@{value}-hidden {
+            display: flex;
+          }
+        });
 
+    .col-xs-hidden,
     .col-hidden {
       display: none;
     }
 
-    @media @xs {
-      .generateResponsiveCols(@cols, xs);
+    each(@breakpoints, {
+      @media @value {
+        .generateResponsiveCols(@cols, @key);
+        .generateSpacingWithBreakpoint(@cols, @key);
 
-      .col-sm-hidden,
-      .col-md-hidden,
-      .col-lg-hidden,
-      .col-xl-hidden,
-      .col-hidden {
-        display: flex;
+        each(@breakpoints, {
+          .col-@{value}-hidden {
+            display: flex;
+          }
+        });
+
+        .col-hidden {
+          display: flex;
+        }
+        .col-@{value}-hidden {
+          display: none;
+        }
       }
-
-      .col-xs-hidden {
-        display: none;
-      }
-    }
-
-    @media @sm {
-      .generateResponsiveCols(@cols, sm);
-
-      .col-xs-hidden,
-      .col-md-hidden,
-      .col-lg-hidden,
-      .col-xl-hidden,
-      .col-hidden {
-        display: flex;
-      }
-
-      .col-sm-hidden {
-        display: none;
-      }
-    }
-
-    @media @md {
-      .generateResponsiveCols(@cols, md);
-
-      .col-sm-hidden,
-      .col-lg-hidden,
-      .col-xl-hidden,
-      .col-hidden {
-        display: flex;
-      }
-
-      .col-md-hidden {
-        display: none;
-      }
-    }
-
-    @media @lg {
-      .generateResponsiveCols(@cols, lg);
-
-      .col-xs-hidden,
-      .col-sm-hidden,
-      .col-md-hidden,
-      .col-xl-hidden,
-      .col-hidden {
-        display: flex;
-      }
-
-      .col-lg-hidden {
-        display: none;
-      }
-    }
-
-    @media @xl {
-      .generateResponsiveCols(@cols, xl);
-
-      .col-xs-hidden,
-      .col-sm-hidden,
-      .col-md-hidden,
-      .col-lg-hidden,
-      .col-hidden {
-        display: flex;
-      }
-
-      .col-xl-hidden {
-        display: none;
-      }
-    }
+    })
   }
 
   .row {
