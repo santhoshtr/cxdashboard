@@ -1,17 +1,17 @@
 <template>
-  <div class="row items-center justify-start justify-between  ">
-    <div class="col-6 justify-start">
-      <h2 class="title">
-        <mw-ui-icon size="36">{{ mwIconWikipediaLogo }}</mw-ui-icon
+  <header class="row items-center justify-start justify-between ">
+    <div class="col-6 justify-start pl-4">
+      <span class="title">
+        <mw-ui-icon size="32">{{ mwIconWikipediaLogo }}</mw-ui-icon
         >Translations
-      </h2>
+      </span>
     </div>
-    <div class="col-6 col-sm-hidden justify-end">
+    <div class="col-6 col-sm-hidden justify-end pr-4">
       <mw-ui-icon>{{ mwIconBell }}</mw-ui-icon>
       <mw-ui-icon>{{ mwIconUserAvatar }}</mw-ui-icon
       >Santhosh
     </div>
-  </div>
+  </header>
 </template>
 
 <script>
@@ -35,3 +35,10 @@ export default {
   })
 };
 </script>
+
+<style scoped>
+.title {
+  line-height: 1;
+  font-size: 1.2em;
+}
+</style>

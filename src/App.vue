@@ -6,7 +6,7 @@
         <div class="row">
           <mw-ui-button type="progressive" class="col-4"
             ><mw-ui-icon>{{ mwIconAdd }}</mw-ui-icon
-            >New translation</mw-ui-button
+            >{{ $i18n("cx-create-new-translation") }}</mw-ui-button
           >
           <mw-ui-button class="col-2 col-offset-2">Suggestions</mw-ui-button>
           <mw-ui-button class="col-2">Draft</mw-ui-button>
