@@ -1,37 +1,39 @@
 <template>
-  <div id="app" class="row container">
-    <Header />
-    <div class="row dashboard-container">
-      <div class="col-xs-12 col-md-8">
-        <div class="row">
-          <mw-ui-button type="progressive" class="col-4"
-            ><mw-ui-icon>{{ mwIconAdd }}</mw-ui-icon
-            >{{ $i18n("cx-create-new-translation") }}</mw-ui-button
-          >
-          <mw-ui-button class="col-2 col-offset-2">Suggestions</mw-ui-button>
-          <mw-ui-button class="col-2">Draft</mw-ui-button>
-          <mw-ui-button class="col-2">Published</mw-ui-button>
-        </div>
-
-        <Card>
-          <div class="col-12">
-            <div
-              class="row"
-              :key="index"
-              v-for="(item, index) in publishedTranslations"
+  <div id="app" dir="ltr">
+    <div class="container">
+      <Header />
+      <div class="row dashboard-container">
+        <div class="col-xs-12 col-md-8">
+          <div class="row">
+            <mw-ui-button type="progressive" class="col-4"
+              ><mw-ui-icon>{{ mwIconAdd }}</mw-ui-icon
+              >{{ $i18n("cx-create-new-translation") }}</mw-ui-button
             >
-              <div class="col-12">
-                {{ item.translation && item.translation.sourceTitle }}
-                ->
-                {{ item.translation && item.translation.targetTitle }}
+            <mw-ui-button class="col-2 col-offset-2">Suggestions</mw-ui-button>
+            <mw-ui-button class="col-2">Draft</mw-ui-button>
+            <mw-ui-button class="col-2">Published</mw-ui-button>
+          </div>
+
+          <Card>
+            <div class="col-12">
+              <div
+                class="row"
+                :key="index"
+                v-for="(item, index) in publishedTranslations"
+              >
+                <div class="col-12">
+                  {{ item.translation && item.translation.sourceTitle }}
+                  ->
+                  {{ item.translation && item.translation.targetTitle }}
+                </div>
               </div>
             </div>
-          </div>
-        </Card>
-      </div>
-      <div class="col-xs-12 col-md-4">
-        <LeaderBoard />
-        <Help />
+          </Card>
+        </div>
+        <div class="col-xs-12 col-md-4">
+          <LeaderBoard />
+          <Help />
+        </div>
       </div>
     </div>
   </div>

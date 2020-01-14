@@ -17,84 +17,73 @@
   xl: ~"only screen and (min-width: 1200px)"; // large screen
 }
 
-// Loop for responsive breakpoints
+// Generate LTR and RTL style for a given property and value. Replaces 'left' by 'right' and vice versa
+.bidi(@property, @value) {
+  @{property}: @value;
+
+  @flipped-property-l2r: replace( @property, 'left', 'right');
+  @flipped-property: if( @flipped-property-l2r=@property, replace( @property, 'right', 'left'), @flipped-property-l2r );
+  @flipped-value-l2r: replace(@value, 'left', 'right');
+  @flipped-value: if( @flipped-value-l2r=@value,replace( @value, 'right', 'left'), @flipped-value-l2r );
+
+  [dir=rtl] &{
+    @{flipped-property}: @flipped-value;
+  }
+}
+
+// Generate style with responsive columns
 .generateResponsiveCols(@counter, @media) when (@counter > 0) {
   @width: (@counter / @cols) * 100;
-  .col-@{media}-@{counter} {
+  @mediaKey: if(@media='', ~'', ~'@{media}-');
+
+  .col-@{mediaKey}@{counter} {
     flex-basis: ~"@{width}%";
     max-width: ~"@{width}%";
   }
 
-  .col-offset-@{media}-@{counter} {
+  .col-offset-@{mediaKey}@{counter} {
     margin-left: ~"@{width}%";
   }
   .generateResponsiveCols((@counter - 1), @media);
 }
 
-// Loop for normal cols
-.generateCols(@counter) when (@counter > 0) {
-  @width: (@counter / @cols) * 100;
-  .col-@{counter} {
-    flex-basis: ~"@{width}%";
-    max-width: ~"@{width}%";
-  }
-
-  .col-offset-@{counter} {
-    margin-left: ~"@{width}%";
-  }
-  .generateCols(@counter - 1);
-}
-
-.generateSpacingWithBreakpoint(@counter, @media) when (@counter >= 0) {
+// Generate margin and padding style for different breakpoints.
+.generateSpacing(@counter, @media) when (@counter >= 0) {
   @width: @counter * 4;
-  @sides: {
-    l: left;
-    r: right;
-    t: top;
-    b: bottom;
+  @mediaKey: if(@media='', ~'', ~'@{media}-');
+
+  .ps-@{mediaKey}@{counter} {
+    .bidi(~'padding-left', ~"@{width}px");
+  }
+  .ms-@{mediaKey}@{counter} {
+    .bidi(~"margin-left", ~"@{width}px");
+  }
+  .pe-@{mediaKey}@{counter} {
+    .bidi(~'padding-right', ~"@{width}px");
+  }
+  .me-@{mediaKey}@{counter} {
+    .bidi(~"margin-right", ~"@{width}px");
   }
 
-  each(@sides, {
-    .p@{key}-@{media}-@{counter} {
-      padding-@{value}: ~"@{width}px";
-    }
-    .m@{key}-@{media}-@{counter} {
-      margin-@{value}: ~"@{width}px";
-    }
-  });
-  .pa-@{media}-@{counter} {
+  .pt-@{mediaKey}@{counter} {
+    padding-top: ~"@{width}px";
+  }
+  .mt-@{mediaKey}@{counter} {
+    margin-top: ~"@{width}px";
+  }
+  .pb-@{mediaKey}@{counter} {
+    padding-bottom: ~"@{width}px";
+  }
+  .mb-@{mediaKey}@{counter} {
+    margin-bottom: ~"@{width}px";
+  }
+  .pa-@{mediaKey}@{counter} {
     padding: ~"@{width}px";
   }
-  .ma-@{media}-@{counter} {
+  .ma-@{mediaKey}@{counter} {
     margin: ~"@{width}px";
   }
-  .generateSpacing(@counter - 1);
-}
-
-.generateSpacing(@counter) when (@counter >= 0) {
-  @width: @counter * 4;
-  @sides: {
-    l: left;
-    r: right;
-    t: top;
-    b: bottom;
-  }
-
-  each(@sides, {
-    .p@{key}-@{counter} {
-      padding-@{value}: ~"@{width}px";
-    }
-    .m@{key}-@{counter} {
-      margin-@{value}: ~"@{width}px";
-    }
-  });
-  .pa-@{counter} {
-    padding: ~"@{width}px";
-  }
-  .ma-@{counter} {
-    margin: ~"@{width}px";
-  }
-  .generateSpacing(@counter - 1);
+  .generateSpacing(@counter - 1, @media);
 }
 
 .container {
@@ -122,11 +111,11 @@
       padding-left: @gutter / 2;
     }
 
-    .generateCols(@cols);
-    .generateSpacing(@cols);
+    .generateResponsiveCols(@cols,'');
+    .generateSpacing(@cols, '');
 
     each(@breakpoints, {
-          .col-@{value}-hidden {
+          .col-@{key}-hidden {
             display: flex;
           }
         });
@@ -139,10 +128,10 @@
     each(@breakpoints, {
       @media @value {
         .generateResponsiveCols(@cols, @key);
-        .generateSpacingWithBreakpoint(@cols, @key);
+        .generateSpacing(@cols, @key);
 
         each(@breakpoints, {
-          .col-@{value}-hidden {
+          .col-@{key}-hidden {
             display: flex;
           }
         });
@@ -150,7 +139,7 @@
         .col-hidden {
           display: flex;
         }
-        .col-@{value}-hidden {
+        .col-@{key}-hidden {
           display: none;
         }
       }
